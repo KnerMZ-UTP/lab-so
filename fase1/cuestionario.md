@@ -25,6 +25,7 @@ Ambos límites deben ser iguales para deshabilitar por completo el uso de memori
 Un descriptor de archivo (FD) es un número entero que el kernel asigna a cada recurso abierto por un proceso (archivos, conexiones de red o sockets). Cada petición a `/slow` ocupa 2 FDs porque abre un socket entrante desde Nginx hacia la API y un segundo socket saliente desde la API hacia Redis. Con un límite de 256 FDs y ~4-5 FDs base, en mi API caben máximo 125 o 126 peticiones simultáneas antes de fallar con error EMFILE (*Too many open files*).
 
 10. ¿Qué diferencia hay entre SIGTERM y SIGKILL? ¿Por qué la API necesita un manejador de SIGTERM siendo el PID 1?
+
 SIGTERM (señal 15) es una solicitud amable de cierre que permite al programa guardar datos, cerrar conexiones y terminar limpiamente, mientras que SIGKILL (señal 9) es una orden inmediata del kernel que mata el proceso sin darle oportunidad de reaccionar. En Linux, el kernel protege al PID 1 ignorando las señales SIGTERM por defecto, por lo que `app.py` necesita un manejador explícito para capturar esa señal y detenerse sin esperar los 10 segundos forzados de `docker stop`.
 
 
